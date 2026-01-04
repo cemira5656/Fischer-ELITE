@@ -65,7 +65,6 @@ def get_fast_fundamentals(tickers: list[str]) -> pd.DataFrame:
                 }
             )
         except Exception:
-            # keep going; yfinance sometimes errors on individual tickers
             continue
 
     if not rows:
@@ -75,7 +74,12 @@ def get_fast_fundamentals(tickers: list[str]) -> pd.DataFrame:
 
 
 def load_prices_for_timing(tickers: list[str], history_days: int) -> dict[str, pd.Series]:
+    """
+    Robustly fetch Adj Close (or Close) for each ticker using yfinance.download.
+    Handles both MultiIndex (multi-ticker) and single-index (single ticker) responses.
+    """
     px: dict[str, pd.Series] = {}
+
     data = yf.download(
         tickers=tickers,
         period=f"{history_days}d",
@@ -86,16 +90,29 @@ def load_prices_for_timing(tickers: list[str], history_days: int) -> dict[str, p
         threads=True,
     )
 
-    for t in tickers:
-        try:
-            # Prefer Adj Close if available, else Close
+    # MultiIndex columns: (Ticker, Field)
+    if isinstance(data.columns, pd.MultiIndex):
+        for t in tickers:
             if (t, "Adj Close") in data.columns:
-                s = data[(t, "Adj Close")]
+                s = data[(t, "Adj Close")].dropna()
+            elif (t, "Close") in data.columns:
+                s = data[(t, "Close")].dropna()
             else:
-                s = data[(t, "Close")]
-            px[t] = s.dropna()
-        except Exception:
-            continue
+                continue
+            if len(s) > 0:
+                px[t] = s
+
+    # Single ticker: normal columns
+    else:
+        if "Adj Close" in data.columns:
+            s = data["Adj Close"].dropna()
+        elif "Close" in data.columns:
+            s = data["Close"].dropna()
+        else:
+            s = pd.Series(dtype=float)
+
+        if len(s) > 0 and tickers:
+            px[tickers[0]] = s
 
     return px
 
@@ -131,7 +148,6 @@ def update_elite(
     hist: dict = state.get("history", {})
     elite = set(state.get("elite", []))
 
-    # Track streaks for a reasonable slice of the market
     for t in ranked[:300]:
         h = hist.get(t, {"in_top10_streak": 0, "out_top20_streak": 0})
         if t in top10:
@@ -141,22 +157,18 @@ def update_elite(
             h["out_top20_streak"] += 1
             h["in_top10_streak"] = 0
         else:
-            # in 11-20 => neither streak advances
             h["in_top10_streak"] = 0
             h["out_top20_streak"] = 0
         hist[t] = h
 
-    # Enter
     for t, h in hist.items():
         if h["in_top10_streak"] >= enter_weeks:
             elite.add(t)
 
-    # Exit
     for t, h in list(hist.items()):
         if t in elite and h["out_top20_streak"] >= exit_weeks:
             elite.remove(t)
 
-    # Cap to elite_cap by current rank priority
     elite_sorted = [t for t in ranked if t in elite][:elite_cap]
 
     state["elite"] = elite_sorted
@@ -165,33 +177,101 @@ def update_elite(
     return state
 
 
+def to_html_email(as_of: str, elite: list[str], overlap_pct: float, combined: pd.DataFrame) -> str:
+    triggers = combined[combined["signal"] == "TRIGGER"].copy()
+    setups = combined[combined["signal"] == "SETUP"].copy()
+
+    def fmt_df(df: pd.DataFrame) -> str:
+        if df.empty:
+            return "<p><em>None</em></p>"
+
+        cols = [
+            "fisherScore",
+            "signal",
+            "last_close",
+            "ma50",
+            "drawdown_from_ath",
+            "near_ma50_pct",
+            "days_since_ath",
+        ]
+        df2 = df[cols].copy()
+        df2.insert(0, "ticker", df.index)
+
+        df2["fisherScore"] = df2["fisherScore"].map(lambda x: f"{x:.1f}" if pd.notna(x) else "")
+        df2["last_close"] = df2["last_close"].map(lambda x: f"{x:.2f}" if pd.notna(x) else "")
+        df2["ma50"] = df2["ma50"].map(lambda x: f"{x:.2f}" if pd.notna(x) else "")
+        df2["drawdown_from_ath"] = df2["drawdown_from_ath"].map(lambda x: f"{x:.1%}" if pd.notna(x) else "")
+        df2["near_ma50_pct"] = df2["near_ma50_pct"].map(lambda x: f"{x:.1%}" if pd.notna(x) else "")
+        df2["days_since_ath"] = df2["days_since_ath"].map(lambda x: f"{int(x)}" if pd.notna(x) else "")
+
+        return df2.to_html(index=False, escape=True, border=0)
+
+    style = """
+    <style>
+      body { font-family: Arial, sans-serif; }
+      h2 { margin: 0 0 6px 0; }
+      p { margin: 6px 0; }
+      table { border-collapse: collapse; width: 100%; font-size: 13px; margin: 8px 0 16px 0; }
+      th, td { border-bottom: 1px solid #ddd; padding: 6px 8px; text-align: left; }
+      th { background: #f6f6f6; }
+      .pill { display: inline-block; padding: 2px 10px; border-radius: 999px; background: #eee; font-size: 12px; }
+      .muted { color: #666; font-size: 12px; }
+    </style>
+    """
+
+    elite_str = ", ".join(elite) if elite else "(empty until streaks build)"
+
+    html = f"""
+    <html>
+    <head>{style}</head>
+    <body>
+      <h2>Weekly Fisher ELITE + 50DMA Signals</h2>
+      <p><strong>As of:</strong> {as_of}</p>
+      <p><strong>ELITE (Absolute Top 10):</strong> <span class="pill">{elite_str}</span></p>
+      <p><strong>Overlap (ELITE in Top 20):</strong> {overlap_pct:.1f}%</p>
+
+      <h3>TRIGGER (bounce confirmed)</h3>
+      {fmt_df(triggers)}
+
+      <h3>SETUP (near 50DMA after ATH pullback)</h3>
+      {fmt_df(setups)}
+
+      <p class="muted">
+        Full details are committed to your repo in <code>output/report.md</code>.
+      </p>
+    </body>
+    </html>
+    """
+    return html
+
+
 def main() -> None:
     settings = load_yaml("config/settings.yml")
 
-    # 1) Build universe
+    # 1) Universe
     syms = fetch_us_common_stock_symbols(max_symbols=settings["universe"]["max_symbols"])
 
-    # 2) Get fundamentals + liquidity proxies
+    # 2) Fundamentals/liquidity
     base = get_fast_fundamentals(syms)
     if base.empty:
         raise RuntimeError("No fundamentals data returned. yfinance may be rate-limiting or failing.")
 
-    # 3) Filter for size + liquidity
+    # 3) Filters
     u = settings["universe"]
     base = base.dropna(subset=["marketCap", "avgDollarVol"], how="any")
     base = base[
         (base["marketCap"] >= u["min_market_cap"]) & (base["avgDollarVol"] >= u["min_avg_dollar_vol"])
     ].copy()
 
-    # Keep the workload sane
+    # Keep workload sane
     base = base.sort_values("marketCap", ascending=False).head(1200)
 
-    # 4) Score and rank
+    # 4) Score + rank
     scored = fisher_proxy_score(base, settings["scoring"]["weights"])
     scored = scored.sort_values("fisherScore", ascending=False)
     ranked = scored.index.tolist()
 
-    # 5) Update elite list (absolute top 10)
+    # 5) Elite update
     elite_cfg = settings.get("elite", {})
     state = load_elite_state()
     state = update_elite(
@@ -204,14 +284,14 @@ def main() -> None:
     save_elite_state(state)
     absolute_top10 = state["elite"]
 
-    # 6) Build current top 20 + overlap
+    # 6) Top 20 + overlap
     top20 = scored.head(20).copy()
     top20_tickers = top20.index.tolist()
 
     overlap = sorted(set(top20_tickers).intersection(set(absolute_top10)))
     overlap_pct_of_abs10 = round(100.0 * len(overlap) / 10.0, 1)
 
-    # 7) Timing module on top 20
+    # 7) Timing on top 20
     timing_cfg = settings["timing"]
     px = load_prices_for_timing(top20_tickers, history_days=int(timing_cfg["ath_lookback_days"]) + 300)
 
@@ -275,10 +355,11 @@ def main() -> None:
 
     (outdir / "report.md").write_text("\n".join(lines))
 
-    # 9) Email the report (Gmail SMTP)
+    # 9) Email both plain text + HTML table version
     subject = f"Weekly Fisher ELITE + 50DMA Signals — {date.today()}"
     report_text = (outdir / "report.md").read_text()
-    send_gmail(subject, report_text)
+    report_html = to_html_email(str(date.today()), absolute_top10, overlap_pct_of_abs10, combined)
+    send_gmail(subject, report_text, report_html)
 
     print("Wrote output/report.md, output/signals.json, state/elite.json (and emailed report)")
 
