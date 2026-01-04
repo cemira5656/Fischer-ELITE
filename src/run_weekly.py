@@ -82,9 +82,6 @@ def get_fast_fundamentals(tickers: list[str]) -> pd.DataFrame:
 
 
 def _download_adjclose(tickers: list[str], period: str) -> tuple[pd.DataFrame, bool]:
-    """
-    Download prices and return (data, is_multiindex).
-    """
     data = yf.download(
         tickers=tickers,
         period=period,
@@ -106,7 +103,6 @@ def _extract_series(data: pd.DataFrame, is_mi: bool, ticker: str) -> pd.Series |
                 return data[(ticker, "Close")].dropna()
             return None
         else:
-            # Single ticker shape
             if "Adj Close" in data.columns:
                 return data["Adj Close"].dropna()
             if "Close" in data.columns:
@@ -118,16 +114,15 @@ def _extract_series(data: pd.DataFrame, is_mi: bool, ticker: str) -> pd.Series |
 
 def add_momentum_features(df: pd.DataFrame, tickers: list[str]) -> pd.DataFrame:
     """
-    Adds momentum and RS proxy columns:
+    Adds:
       - ret_12m / ret_6m / ret_3m
       - rs_12m (ticker 12m - SPY 12m)
-      - ps_rank (percentile rank of 12m return) 0..100
-      - rs_rank (percentile rank of rs_12m) 0..100
+      - ps_rank (pct rank of 12m return) 0..100
+      - rs_rank (pct rank of rs_12m) 0..100
     """
     if df.empty or not tickers:
         return df
 
-    # Need enough bars for 252 trading days return
     period = "420d"
     all_tickers = list(dict.fromkeys(tickers + ["SPY"]))
 
@@ -155,12 +150,7 @@ def add_momentum_features(df: pd.DataFrame, tickers: list[str]) -> pd.DataFrame:
         r3 = ret_n(63)
         rs12 = (r12 - spy_ret_12m) if np.isfinite(r12) and np.isfinite(spy_ret_12m) else np.nan
 
-        rows[t] = {
-            "ret_12m": r12,
-            "ret_6m": r6,
-            "ret_3m": r3,
-            "rs_12m": rs12,
-        }
+        rows[t] = {"ret_12m": r12, "ret_6m": r6, "ret_3m": r3, "rs_12m": rs12}
 
     mom = pd.DataFrame.from_dict(rows, orient="index")
     if mom.empty:
@@ -173,10 +163,6 @@ def add_momentum_features(df: pd.DataFrame, tickers: list[str]) -> pd.DataFrame:
 
 
 def load_prices_for_timing(tickers: list[str], history_days: int) -> dict[str, pd.Series]:
-    """
-    Robustly fetch Adj Close (or Close) for each ticker for timing.
-    Handles MultiIndex (multi-ticker) and single-index (single ticker) responses.
-    """
     px: dict[str, pd.Series] = {}
 
     data = yf.download(
@@ -206,6 +192,7 @@ def load_prices_for_timing(tickers: list[str], history_days: int) -> dict[str, p
             s = data["Close"].dropna()
         else:
             s = pd.Series(dtype=float)
+
         if len(s) > 0 and tickers:
             px[tickers[0]] = s
 
@@ -269,11 +256,11 @@ def to_html_email(as_of: str, elite_display: list[str], overlap_pct: float, comb
     triggers = combined[combined["signal"] == "TRIGGER"].copy()
     setups = combined[combined["signal"] == "SETUP"].copy()
 
-    def fmt_df(df: pd.DataFrame) -> str:
+    def fmt_df(df: pd.DataFrame, include_signal: bool = True) -> str:
         if df.empty:
             return "<p><em>None</em></p>"
 
-        cols = [
+        base_cols = [
             "fisherScore",
             "signal",
             "last_close",
@@ -282,6 +269,9 @@ def to_html_email(as_of: str, elite_display: list[str], overlap_pct: float, comb
             "near_ma50_pct",
             "days_since_ath",
         ]
+
+        cols = base_cols if include_signal else [c for c in base_cols if c != "signal"]
+
         df2 = df[cols].copy()
         df2.insert(
             0,
@@ -292,12 +282,18 @@ def to_html_email(as_of: str, elite_display: list[str], overlap_pct: float, comb
             ],
         )
 
-        df2["fisherScore"] = df2["fisherScore"].map(lambda x: f"{x:.1f}" if pd.notna(x) else "")
-        df2["last_close"] = df2["last_close"].map(lambda x: f"{x:.2f}" if pd.notna(x) else "")
-        df2["ma50"] = df2["ma50"].map(lambda x: f"{x:.2f}" if pd.notna(x) else "")
-        df2["drawdown_from_ath"] = df2["drawdown_from_ath"].map(lambda x: f"{x:.1%}" if pd.notna(x) else "")
-        df2["near_ma50_pct"] = df2["near_ma50_pct"].map(lambda x: f"{x:.1%}" if pd.notna(x) else "")
-        df2["days_since_ath"] = df2["days_since_ath"].map(lambda x: f"{int(x)}" if pd.notna(x) else "")
+        if "fisherScore" in df2.columns:
+            df2["fisherScore"] = df2["fisherScore"].map(lambda x: f"{x:.1f}" if pd.notna(x) else "")
+        if "last_close" in df2.columns:
+            df2["last_close"] = df2["last_close"].map(lambda x: f"{x:.2f}" if pd.notna(x) else "")
+        if "ma50" in df2.columns:
+            df2["ma50"] = df2["ma50"].map(lambda x: f"{x:.2f}" if pd.notna(x) else "")
+        if "drawdown_from_ath" in df2.columns:
+            df2["drawdown_from_ath"] = df2["drawdown_from_ath"].map(lambda x: f"{x:.1%}" if pd.notna(x) else "")
+        if "near_ma50_pct" in df2.columns:
+            df2["near_ma50_pct"] = df2["near_ma50_pct"].map(lambda x: f"{x:.1%}" if pd.notna(x) else "")
+        if "days_since_ath" in df2.columns:
+            df2["days_since_ath"] = df2["days_since_ath"].map(lambda x: f"{int(x)}" if pd.notna(x) else "")
 
         return df2.to_html(index=False, escape=False, border=0)
 
@@ -327,6 +323,9 @@ def to_html_email(as_of: str, elite_display: list[str], overlap_pct: float, comb
         else "(empty until streaks build)"
     )
 
+    # TOP 20 table (ranked)
+    top20_df = combined.head(20).copy()
+
     html = f"""
     <html>
     <head>{style}</head>
@@ -336,11 +335,14 @@ def to_html_email(as_of: str, elite_display: list[str], overlap_pct: float, comb
       <p><strong>ELITE (Absolute Top 10):</strong> <span class="pill">{elite_str}</span></p>
       <p><strong>Overlap (ELITE in Top 20):</strong> {overlap_pct:.1f}%</p>
 
+      <h3>Top 20 (ranked)</h3>
+      {fmt_df(top20_df, include_signal=True)}
+
       <h3>TRIGGER (bounce confirmed)</h3>
-      {fmt_df(triggers)}
+      {fmt_df(triggers, include_signal=True)}
 
       <h3>SETUP (near 50DMA after ATH pullback)</h3>
-      {fmt_df(setups)}
+      {fmt_df(setups, include_signal=True)}
 
       <p class="muted">
         Full details are committed to your repo in <code>output/report.md</code>.
@@ -358,22 +360,18 @@ def to_html_email(as_of: str, elite_display: list[str], overlap_pct: float, comb
 def main() -> None:
     settings = load_yaml("config/settings.yml")
 
-    # Universe
     syms = fetch_us_common_stock_symbols(max_symbols=settings["universe"]["max_symbols"])
 
-    # Fundamentals + liquidity proxies
     base = get_fast_fundamentals(syms)
     if base.empty:
         raise RuntimeError("No fundamentals data returned. yfinance may be rate-limiting or failing.")
 
-    # Filters
     u = settings["universe"]
     base = base.dropna(subset=["marketCap", "avgDollarVol"], how="any")
     base = base[
         (base["marketCap"] >= u["min_market_cap"]) & (base["avgDollarVol"] >= u["min_avg_dollar_vol"])
     ].copy()
 
-    # Workload cap
     base = base.sort_values("marketCap", ascending=False).head(1200)
 
     # Momentum + RS proxy
@@ -385,7 +383,6 @@ def main() -> None:
     if "ps_rank" in base.columns:
         base.loc[mask, "revenueGrowth_filled"] = (base.loc[mask, "ps_rank"] / 100.0)
 
-    # Score + rank
     scored = fisher_proxy_score(base, settings["scoring"]["weights"])
 
     # Tie-breakers to avoid alphabetical bias if scores tie
@@ -395,7 +392,6 @@ def main() -> None:
     )
     ranked = scored.index.tolist()
 
-    # Elite update (persistent)
     elite_cfg = settings.get("elite", {})
     state = load_elite_state()
     state = update_elite(
@@ -415,14 +411,12 @@ def main() -> None:
         fill = [t for t in ranked if t not in absolute_top10_display]
         absolute_top10_display.extend(fill[: (10 - len(absolute_top10_display))])
 
-    # Current top 20
     top20 = scored.head(20).copy()
     top20_tickers = top20.index.tolist()
 
     overlap = sorted(set(top20_tickers).intersection(set(absolute_top10_state)))
     overlap_pct_of_abs10 = round(100.0 * len(overlap) / 10.0, 1)
 
-    # Timing on top 20
     timing_cfg = settings["timing"]
     px = load_prices_for_timing(top20_tickers, history_days=int(timing_cfg["ath_lookback_days"]) + 300)
 
@@ -441,7 +435,6 @@ def main() -> None:
     combined["signal_rank"] = combined["signal"].map(order).fillna(99)
     combined = combined.sort_values(["signal_rank", "fisherScore"], ascending=[True, False])
 
-    # Outputs
     outdir = Path("output")
     outdir.mkdir(exist_ok=True)
 
@@ -456,7 +449,6 @@ def main() -> None:
     }
     (outdir / "signals.json").write_text(json.dumps(payload, indent=2))
 
-    # report.md (plain text)
     lines: list[str] = []
     lines.append("# Weekly Fisher (Proxy) Screener + 50DMA Timing")
     lines.append(f"As of **{date.today()}**")
@@ -488,7 +480,6 @@ def main() -> None:
 
     (outdir / "report.md").write_text("\n".join(lines))
 
-    # Email (plain + HTML)
     subject = f"Weekly Fisher ELITE + 50DMA Signals — {date.today()}"
     report_text = (outdir / "report.md").read_text()
     report_html = to_html_email(str(date.today()), absolute_top10_display, overlap_pct_of_abs10, combined)
