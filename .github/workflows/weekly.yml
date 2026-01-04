@@ -26,6 +26,10 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run screener
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
         run: |
           python src/run_weekly.py
 
