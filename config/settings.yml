@@ -5,12 +5,14 @@ universe:
 
 scoring:
   weights:
-    growth: 0.30
-    margins: 0.20
-    roic: 0.20
+    growth: 0.25
+    margins: 0.15
+    roic: 0.15
     stability: 0.10
-    reinvestment: 0.10
-    dilution: 0.10
+    reinvestment: 0.05
+    dilution: 0.05
+    rs: 0.15
+    ps: 0.10
 
 elite:
   enter_weeks: 2
