@@ -1,0 +1,29 @@
+universe:
+  max_symbols: 2500
+  min_market_cap: 10000000000      # $10B
+  min_avg_dollar_vol: 20000000     # $20M/day
+
+scoring:
+  weights:
+    growth: 0.30
+    margins: 0.20
+    roic: 0.20
+    stability: 0.10
+    reinvestment: 0.10
+    dilution: 0.10
+
+elite:
+  enter_weeks: 2
+  exit_weeks: 2
+  elite_cap: 10
+
+timing:
+  ath_lookback_days: 2520
+  ath_within_days: 60
+  max_drawdown_from_ath: 0.15
+  min_drawdown_from_ath: 0.03
+  near_ma50_pct: 0.05
+  require_ma50_above_ma200: true
+  require_ma50_rising: true
+  ma50_rising_days: 10
+  reclaim_lookback_days: 5
