@@ -59,7 +59,7 @@ def get_fast_fundamentals(tickers: list[str]) -> pd.DataFrame:
                     "operatingMargins": info.get("operatingMargins"),
                     "returnOnEquity": info.get("returnOnEquity"),
                     "returnOnAssets": info.get("returnOnAssets"),
-                    # placeholders; can be upgraded with a fundamentals API later
+                    # placeholders; can be upgraded later
                     "rndIntensity": np.nan,
                     "sharesChange3y": np.nan,
                 }
@@ -75,7 +75,7 @@ def get_fast_fundamentals(tickers: list[str]) -> pd.DataFrame:
 
 def load_prices_for_timing(tickers: list[str], history_days: int) -> dict[str, pd.Series]:
     """
-    Robustly fetch Adj Close (or Close) for each ticker using yfinance.download.
+    Robustly fetch Adj Close (or Close) for each ticker.
     Handles both MultiIndex (multi-ticker) and single-index (single ticker) responses.
     """
     px: dict[str, pd.Series] = {}
@@ -90,7 +90,7 @@ def load_prices_for_timing(tickers: list[str], history_days: int) -> dict[str, p
         threads=True,
     )
 
-    # MultiIndex columns: (Ticker, Field)
+    # Multi-ticker: MultiIndex columns (Ticker, Field)
     if isinstance(data.columns, pd.MultiIndex):
         for t in tickers:
             if (t, "Adj Close") in data.columns:
@@ -161,10 +161,12 @@ def update_elite(
             h["out_top20_streak"] = 0
         hist[t] = h
 
+    # Enter
     for t, h in hist.items():
         if h["in_top10_streak"] >= enter_weeks:
             elite.add(t)
 
+    # Exit
     for t, h in list(hist.items()):
         if t in elite and h["out_top20_streak"] >= exit_weeks:
             elite.remove(t)
@@ -177,7 +179,11 @@ def update_elite(
     return state
 
 
-def to_html_email(as_of: str, elite: list[str], overlap_pct: float, combined: pd.DataFrame) -> str:
+def yahoo_quote_url(ticker: str) -> str:
+    return f"https://finance.yahoo.com/quote/{ticker}"
+
+
+def to_html_email(as_of: str, elite_display: list[str], overlap_pct: float, combined: pd.DataFrame) -> str:
     triggers = combined[combined["signal"] == "TRIGGER"].copy()
     setups = combined[combined["signal"] == "SETUP"].copy()
 
@@ -195,7 +201,14 @@ def to_html_email(as_of: str, elite: list[str], overlap_pct: float, combined: pd
             "days_since_ath",
         ]
         df2 = df[cols].copy()
-        df2.insert(0, "ticker", df.index)
+        df2.insert(
+            0,
+            "ticker",
+            [
+                f'<a href="{yahoo_quote_url(t)}" target="_blank" rel="noopener noreferrer">{t}</a>'
+                for t in df.index
+            ],
+        )
 
         df2["fisherScore"] = df2["fisherScore"].map(lambda x: f"{x:.1f}" if pd.notna(x) else "")
         df2["last_close"] = df2["last_close"].map(lambda x: f"{x:.2f}" if pd.notna(x) else "")
@@ -204,7 +217,8 @@ def to_html_email(as_of: str, elite: list[str], overlap_pct: float, combined: pd
         df2["near_ma50_pct"] = df2["near_ma50_pct"].map(lambda x: f"{x:.1%}" if pd.notna(x) else "")
         df2["days_since_ath"] = df2["days_since_ath"].map(lambda x: f"{int(x)}" if pd.notna(x) else "")
 
-        return df2.to_html(index=False, escape=True, border=0)
+        # IMPORTANT: escape=False so <a href> renders as links
+        return df2.to_html(index=False, escape=False, border=0)
 
     style = """
     <style>
@@ -219,7 +233,16 @@ def to_html_email(as_of: str, elite: list[str], overlap_pct: float, combined: pd
     </style>
     """
 
-    elite_str = ", ".join(elite) if elite else "(empty until streaks build)"
+    elite_str = (
+        ", ".join(
+            [
+                f'<a href="{yahoo_quote_url(t)}" target="_blank" rel="noopener noreferrer">{t}</a>'
+                for t in elite_display
+            ]
+        )
+        if elite_display
+        else "(empty until streaks build)"
+    )
 
     html = f"""
     <html>
@@ -263,15 +286,19 @@ def main() -> None:
         (base["marketCap"] >= u["min_market_cap"]) & (base["avgDollarVol"] >= u["min_avg_dollar_vol"])
     ].copy()
 
-    # Keep workload sane
     base = base.sort_values("marketCap", ascending=False).head(1200)
 
     # 4) Score + rank
     scored = fisher_proxy_score(base, settings["scoring"]["weights"])
-    scored = scored.sort_values("fisherScore", ascending=False)
+
+    # FIX 1: tie-breakers prevent alphabetical ticker bias when fisherScore ties
+    scored = scored.sort_values(
+        ["fisherScore", "marketCap", "avgDollarVol"],
+        ascending=[False, False, False],
+    )
     ranked = scored.index.tolist()
 
-    # 5) Elite update
+    # 5) Elite update (persistent)
     elite_cfg = settings.get("elite", {})
     state = load_elite_state()
     state = update_elite(
@@ -282,13 +309,20 @@ def main() -> None:
         elite_cap=int(elite_cfg.get("elite_cap", 10)),
     )
     save_elite_state(state)
-    absolute_top10 = state["elite"]
+
+    absolute_top10_state = state["elite"]
+
+    # FIX 2: Fill up to 10 for display (email/report), without changing state truth
+    absolute_top10_display = list(absolute_top10_state)
+    if len(absolute_top10_display) < 10:
+        fill = [t for t in ranked if t not in absolute_top10_display]
+        absolute_top10_display.extend(fill[: (10 - len(absolute_top10_display))])
 
     # 6) Top 20 + overlap
     top20 = scored.head(20).copy()
     top20_tickers = top20.index.tolist()
 
-    overlap = sorted(set(top20_tickers).intersection(set(absolute_top10)))
+    overlap = sorted(set(top20_tickers).intersection(set(absolute_top10_state)))
     overlap_pct_of_abs10 = round(100.0 * len(overlap) / 10.0, 1)
 
     # 7) Timing on top 20
@@ -317,13 +351,15 @@ def main() -> None:
     payload = {
         "as_of": str(date.today()),
         "universe_size_after_filters": int(base.shape[0]),
-        "absolute_top10": absolute_top10,
+        "absolute_top10": absolute_top10_state,          # persistent truth
+        "absolute_top10_display": absolute_top10_display, # human-friendly (always 10)
         "top20": combined.reset_index().to_dict(orient="records"),
         "overlap_with_absolute_top10": overlap,
         "overlap_pct_of_absolute_top10": overlap_pct_of_abs10,
     }
     (outdir / "signals.json").write_text(json.dumps(payload, indent=2))
 
+    # report.md (plain text)
     lines: list[str] = []
     lines.append("# Weekly Fisher (Proxy) Screener + 50DMA Timing")
     lines.append(f"As of **{date.today()}**")
@@ -331,7 +367,7 @@ def main() -> None:
     lines.append(f"Universe after filters: **{payload['universe_size_after_filters']}**")
     lines.append(
         "Absolute top 10 (elite): **"
-        + (", ".join(absolute_top10) if absolute_top10 else "(empty until streaks build)")
+        + (", ".join(absolute_top10_display) if absolute_top10_display else "(empty until streaks build)")
         + "**"
     )
     lines.append(f"Overlap with elite in Top 20: **{len(overlap)}/10 = {overlap_pct_of_abs10}%**")
@@ -355,10 +391,10 @@ def main() -> None:
 
     (outdir / "report.md").write_text("\n".join(lines))
 
-    # 9) Email both plain text + HTML table version
+    # 9) Email (plain + HTML)
     subject = f"Weekly Fisher ELITE + 50DMA Signals — {date.today()}"
     report_text = (outdir / "report.md").read_text()
-    report_html = to_html_email(str(date.today()), absolute_top10, overlap_pct_of_abs10, combined)
+    report_html = to_html_email(str(date.today()), absolute_top10_display, overlap_pct_of_abs10, combined)
     send_gmail(subject, report_text, report_html)
 
     print("Wrote output/report.md, output/signals.json, state/elite.json (and emailed report)")
