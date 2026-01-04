@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import json
 from datetime import date
 from pathlib import Path
@@ -8,12 +9,15 @@ import pandas as pd
 import yaml
 import yfinance as yf
 
+from email_report import send_gmail
 from universe import fetch_us_common_stock_symbols
 from fisher_score import fisher_proxy_score
 from timing import compute_timing_signals
 
+
 def load_yaml(path: str) -> dict:
     return yaml.safe_load(Path(path).read_text())
+
 
 def dollar_vol(prices: pd.Series, volume: pd.Series, lookback: int = 20) -> float:
     df = pd.DataFrame({"p": prices, "v": volume}).dropna()
@@ -22,8 +26,9 @@ def dollar_vol(prices: pd.Series, volume: pd.Series, lookback: int = 20) -> floa
     dv = (df["p"] * df["v"]).tail(lookback).mean()
     return float(dv)
 
+
 def get_fast_fundamentals(tickers: list[str]) -> pd.DataFrame:
-    rows = []
+    rows: list[dict] = []
     for t in tickers:
         try:
             tk = yf.Ticker(t)
@@ -42,29 +47,35 @@ def get_fast_fundamentals(tickers: list[str]) -> pd.DataFrame:
             rets = close.pct_change().dropna()
             vol1y = float(rets.std() * np.sqrt(252)) if len(rets) > 20 else np.nan
 
-            rows.append({
-                "ticker": t,
-                "marketCap": float(market_cap) if market_cap else np.nan,
-                "avgDollarVol": avg_dv,
-                "volatility1y": vol1y,
-                "revenueGrowth": info.get("revenueGrowth"),
-                "earningsGrowth": info.get("earningsGrowth"),
-                "grossMargins": info.get("grossMargins"),
-                "operatingMargins": info.get("operatingMargins"),
-                "returnOnEquity": info.get("returnOnEquity"),
-                "returnOnAssets": info.get("returnOnAssets"),
-                # placeholders; can be upgraded with a fundamentals API later
-                "rndIntensity": np.nan,
-                "sharesChange3y": np.nan,
-            })
+            rows.append(
+                {
+                    "ticker": t,
+                    "marketCap": float(market_cap) if market_cap else np.nan,
+                    "avgDollarVol": avg_dv,
+                    "volatility1y": vol1y,
+                    "revenueGrowth": info.get("revenueGrowth"),
+                    "earningsGrowth": info.get("earningsGrowth"),
+                    "grossMargins": info.get("grossMargins"),
+                    "operatingMargins": info.get("operatingMargins"),
+                    "returnOnEquity": info.get("returnOnEquity"),
+                    "returnOnAssets": info.get("returnOnAssets"),
+                    # placeholders; can be upgraded with a fundamentals API later
+                    "rndIntensity": np.nan,
+                    "sharesChange3y": np.nan,
+                }
+            )
         except Exception:
+            # keep going; yfinance sometimes errors on individual tickers
             continue
 
-    df = pd.DataFrame(rows).set_index("ticker")
-    return df
+    if not rows:
+        return pd.DataFrame()
+
+    return pd.DataFrame(rows).set_index("ticker")
+
 
 def load_prices_for_timing(tickers: list[str], history_days: int) -> dict[str, pd.Series]:
-    px = {}
+    px: dict[str, pd.Series] = {}
     data = yf.download(
         tickers=tickers,
         period=f"{history_days}d",
@@ -72,33 +83,55 @@ def load_prices_for_timing(tickers: list[str], history_days: int) -> dict[str, p
         auto_adjust=False,
         group_by="ticker",
         progress=False,
-        threads=True
+        threads=True,
     )
+
     for t in tickers:
         try:
-            s = data[(t, "Adj Close")] if (t, "Adj Close") in data.columns else data[(t, "Close")]
+            # Prefer Adj Close if available, else Close
+            if (t, "Adj Close") in data.columns:
+                s = data[(t, "Adj Close")]
+            else:
+                s = data[(t, "Close")]
             px[t] = s.dropna()
         except Exception:
             continue
+
     return px
 
-def load_elite_state(path="state/elite.json"):
+
+def load_elite_state(path: str = "state/elite.json") -> dict:
     p = Path(path)
     if not p.exists():
         return {"as_of": None, "elite": [], "history": {}}
     return json.loads(p.read_text())
 
-def save_elite_state(state, path="state/elite.json"):
+
+def save_elite_state(state: dict, path: str = "state/elite.json") -> None:
     Path(path).parent.mkdir(exist_ok=True)
     Path(path).write_text(json.dumps(state, indent=2))
 
-def update_elite(state, ranked, enter_weeks=2, exit_weeks=2, elite_cap=10):
+
+def update_elite(
+    state: dict,
+    ranked: list[str],
+    enter_weeks: int = 2,
+    exit_weeks: int = 2,
+    elite_cap: int = 10,
+) -> dict:
+    """
+    Persistent 'absolute top 10' definition:
+      - enters elite if top10 for enter_weeks consecutive runs
+      - exits elite if outside top20 for exit_weeks consecutive runs
+      - elite list capped at elite_cap by current ranking priority
+    """
     top10 = set(ranked[:10])
     top20 = set(ranked[:20])
 
-    hist = state.get("history", {})
+    hist: dict = state.get("history", {})
     elite = set(state.get("elite", []))
 
+    # Track streaks for a reasonable slice of the market
     for t in ranked[:300]:
         h = hist.get(t, {"in_top10_streak": 0, "out_top20_streak": 0})
         if t in top10:
@@ -108,18 +141,22 @@ def update_elite(state, ranked, enter_weeks=2, exit_weeks=2, elite_cap=10):
             h["out_top20_streak"] += 1
             h["in_top10_streak"] = 0
         else:
+            # in 11-20 => neither streak advances
             h["in_top10_streak"] = 0
             h["out_top20_streak"] = 0
         hist[t] = h
 
+    # Enter
     for t, h in hist.items():
         if h["in_top10_streak"] >= enter_weeks:
             elite.add(t)
 
+    # Exit
     for t, h in list(hist.items()):
         if t in elite and h["out_top20_streak"] >= exit_weeks:
             elite.remove(t)
 
+    # Cap to elite_cap by current rank priority
     elite_sorted = [t for t in ranked if t in elite][:elite_cap]
 
     state["elite"] = elite_sorted
@@ -127,28 +164,34 @@ def update_elite(state, ranked, enter_weeks=2, exit_weeks=2, elite_cap=10):
     state["as_of"] = str(date.today())
     return state
 
-def main():
+
+def main() -> None:
     settings = load_yaml("config/settings.yml")
 
+    # 1) Build universe
     syms = fetch_us_common_stock_symbols(max_symbols=settings["universe"]["max_symbols"])
 
+    # 2) Get fundamentals + liquidity proxies
     base = get_fast_fundamentals(syms)
+    if base.empty:
+        raise RuntimeError("No fundamentals data returned. yfinance may be rate-limiting or failing.")
 
+    # 3) Filter for size + liquidity
     u = settings["universe"]
     base = base.dropna(subset=["marketCap", "avgDollarVol"], how="any")
     base = base[
-        (base["marketCap"] >= u["min_market_cap"]) &
-        (base["avgDollarVol"] >= u["min_avg_dollar_vol"])
+        (base["marketCap"] >= u["min_market_cap"]) & (base["avgDollarVol"] >= u["min_avg_dollar_vol"])
     ].copy()
 
+    # Keep the workload sane
     base = base.sort_values("marketCap", ascending=False).head(1200)
 
+    # 4) Score and rank
     scored = fisher_proxy_score(base, settings["scoring"]["weights"])
     scored = scored.sort_values("fisherScore", ascending=False)
-
     ranked = scored.index.tolist()
 
-    # absolute top 10 (elite) updates automatically
+    # 5) Update elite list (absolute top 10)
     elite_cfg = settings.get("elite", {})
     state = load_elite_state()
     state = update_elite(
@@ -159,20 +202,20 @@ def main():
         elite_cap=int(elite_cfg.get("elite_cap", 10)),
     )
     save_elite_state(state)
-
     absolute_top10 = state["elite"]
 
+    # 6) Build current top 20 + overlap
     top20 = scored.head(20).copy()
     top20_tickers = top20.index.tolist()
 
     overlap = sorted(set(top20_tickers).intersection(set(absolute_top10)))
     overlap_pct_of_abs10 = round(100.0 * len(overlap) / 10.0, 1)
 
-    # timing on top20
+    # 7) Timing module on top 20
     timing_cfg = settings["timing"]
     px = load_prices_for_timing(top20_tickers, history_days=int(timing_cfg["ath_lookback_days"]) + 300)
 
-    timing_rows = []
+    timing_rows: list[dict] = []
     for t in top20_tickers:
         if t not in px or len(px[t]) < 250:
             timing_rows.append({"ticker": t, "signal": "DATA_ERROR", "why": ["Missing price history"]})
@@ -187,6 +230,7 @@ def main():
     combined["signal_rank"] = combined["signal"].map(order).fillna(99)
     combined = combined.sort_values(["signal_rank", "fisherScore"], ascending=[True, False])
 
+    # 8) Write outputs
     outdir = Path("output")
     outdir.mkdir(exist_ok=True)
 
@@ -198,15 +242,18 @@ def main():
         "overlap_with_absolute_top10": overlap,
         "overlap_pct_of_absolute_top10": overlap_pct_of_abs10,
     }
-
     (outdir / "signals.json").write_text(json.dumps(payload, indent=2))
 
-    lines = []
+    lines: list[str] = []
     lines.append("# Weekly Fisher (Proxy) Screener + 50DMA Timing")
     lines.append(f"As of **{date.today()}**")
     lines.append("")
     lines.append(f"Universe after filters: **{payload['universe_size_after_filters']}**")
-    lines.append(f"Absolute top 10 (elite): **{', '.join(absolute_top10) if absolute_top10 else '(empty until streaks build)'}**")
+    lines.append(
+        "Absolute top 10 (elite): **"
+        + (", ".join(absolute_top10) if absolute_top10 else "(empty until streaks build)")
+        + "**"
+    )
     lines.append(f"Overlap with elite in Top 20: **{len(overlap)}/10 = {overlap_pct_of_abs10}%**")
     if overlap:
         lines.append(f"Overlap tickers: {', '.join(overlap)}")
@@ -227,7 +274,14 @@ def main():
         lines.append("")
 
     (outdir / "report.md").write_text("\n".join(lines))
-    print("Wrote output/report.md, output/signals.json, state/elite.json")
+
+    # 9) Email the report (Gmail SMTP)
+    subject = f"Weekly Fisher ELITE + 50DMA Signals — {date.today()}"
+    report_text = (outdir / "report.md").read_text()
+    send_gmail(subject, report_text)
+
+    print("Wrote output/report.md, output/signals.json, state/elite.json (and emailed report)")
+
 
 if __name__ == "__main__":
     main()
