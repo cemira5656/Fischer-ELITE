@@ -13,7 +13,6 @@ def send_gmail(subject: str, body_text: str):
     msg["To"] = to_email
     msg.set_content(body_text)
 
-    # Gmail SMTP
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
         smtp.login(gmail_user, gmail_pass)
         smtp.send_message(msg)
