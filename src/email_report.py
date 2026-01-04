@@ -16,10 +16,10 @@ def send_gmail(subject: str, body_text: str, body_html: str | None = None):
     msg["From"] = gmail_user
     msg["To"] = to_email
 
-    # Always include plain text fallback
+    # Plain text fallback
     msg.set_content(body_text)
 
-    # Optional HTML version
+    # HTML version
     if body_html:
         msg.add_alternative(body_html, subtype="html")
 
