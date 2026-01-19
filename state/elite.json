@@ -1,56 +1,55 @@
 {
-  "as_of": "2026-01-12",
+  "as_of": "2026-01-19",
   "elite": [
     "APP",
-    "ALNY",
     "AGNC",
-    "AMGN",
+    "ALNY",
     "AVGO",
     "AZN",
     "ASND",
-    "CELH",
-    "ADSK",
-    "ALAB"
+    "AMGN",
+    "ALAB",
+    "ADSK"
   ],
   "history": {
     "APP": {
-      "in_top10_streak": 8,
+      "in_top10_streak": 9,
       "out_top20_streak": 0
     },
     "ALNY": {
-      "in_top10_streak": 8,
+      "in_top10_streak": 9,
       "out_top20_streak": 0
     },
     "AGNC": {
-      "in_top10_streak": 8,
+      "in_top10_streak": 9,
       "out_top20_streak": 0
     },
     "ADSK": {
-      "in_top10_streak": 3,
+      "in_top10_streak": 4,
       "out_top20_streak": 0
     },
     "AMGN": {
-      "in_top10_streak": 5,
+      "in_top10_streak": 6,
       "out_top20_streak": 0
     },
     "ADBE": {
       "in_top10_streak": 0,
-      "out_top20_streak": 4
+      "out_top20_streak": 5
     },
     "AVGO": {
-      "in_top10_streak": 3,
+      "in_top10_streak": 4,
       "out_top20_streak": 0
     },
     "ARM": {
       "in_top10_streak": 0,
-      "out_top20_streak": 2
+      "out_top20_streak": 3
     },
     "ALAB": {
-      "in_top10_streak": 3,
+      "in_top10_streak": 4,
       "out_top20_streak": 0
     },
     "AZN": {
-      "in_top10_streak": 3,
+      "in_top10_streak": 4,
       "out_top20_streak": 0
     },
     "ABNB": {
@@ -59,19 +58,19 @@
     },
     "BSY": {
       "in_top10_streak": 0,
-      "out_top20_streak": 4
+      "out_top20_streak": 5
     },
     "BKNG": {
       "in_top10_streak": 0,
       "out_top20_streak": 0
     },
     "ASND": {
-      "in_top10_streak": 3,
+      "in_top10_streak": 4,
       "out_top20_streak": 0
     },
     "AAPL": {
       "in_top10_streak": 0,
-      "out_top20_streak": 1
+      "out_top20_streak": 2
     },
     "ADI": {
       "in_top10_streak": 0,
@@ -83,11 +82,11 @@
     },
     "ADP": {
       "in_top10_streak": 0,
-      "out_top20_streak": 4
+      "out_top20_streak": 5
     },
     "AMZN": {
       "in_top10_streak": 0,
-      "out_top20_streak": 4
+      "out_top20_streak": 5
     },
     "CASY": {
       "in_top10_streak": 0,
@@ -95,39 +94,39 @@
     },
     "ARCC": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "AEP": {
       "in_top10_streak": 0,
-      "out_top20_streak": 0
+      "out_top20_streak": 1
     },
     "CART": {
       "in_top10_streak": 0,
-      "out_top20_streak": 7
+      "out_top20_streak": 8
     },
     "BNTX": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "AXON": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "ACGL": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "AMD": {
       "in_top10_streak": 0,
-      "out_top20_streak": 1
+      "out_top20_streak": 0
     },
     "BBIO": {
-      "in_top10_streak": 0,
+      "in_top10_streak": 1,
       "out_top20_streak": 0
     },
     "BIIB": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "ASML": {
       "in_top10_streak": 0,
@@ -139,47 +138,47 @@
     },
     "AFRM": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "AKAM": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "ASTS": {
       "in_top10_streak": 0,
-      "out_top20_streak": 2
+      "out_top20_streak": 0
     },
     "AMAT": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "BMRN": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "ALGN": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "BKR": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "BILI": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "AMKR": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "BIDU": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "AAL": {
       "in_top10_streak": 0,
-      "out_top20_streak": 8
+      "out_top20_streak": 9
     },
     "ABVX": {
       "in_top10_streak": 0,
@@ -615,7 +614,7 @@
     },
     "APLD": {
       "in_top10_streak": 0,
-      "out_top20_streak": 1
+      "out_top20_streak": 0
     },
     "COKE": {
       "in_top10_streak": 0,
