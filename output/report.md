@@ -1,215 +1,213 @@
 # Weekly Fisher (Proxy) Screener + 50DMA Timing
-As of **2026-03-09**
+As of **2026-03-16**
 
 Universe after filters: **40**
-Absolute top 10 (elite): **APP, AGNC, ALNY, ALAB, AVGO, ARGX, ADI, ASND, AMGN, AAPL**
+Absolute top 10 (elite): **APP, AGNC, ALNY, ALAB, AVGO, ARGX, ADI, ADSK, AMGN, AAPL**
 Overlap with elite in Top 20: **10/10 = 100.0%**
-Overlap tickers: AAPL, ADI, AGNC, ALAB, ALNY, AMGN, APP, ARGX, ASND, AVGO
+Overlap tickers: AAPL, ADI, ADSK, AGNC, ALAB, ALNY, AMGN, APP, ARGX, AVGO
 
-## ADI — SETUP (FisherProxy 61.1)
-- Market cap: 154,179,747,840
-- Avg $ volume: 1,577,942,994
-- Close: 315.81 | 50DMA: 313.89 | 200DMA: 257.55
-- ATH: 359.67 | Days since ATH: 9
-- Drawdown from ATH: 12.2% | Dist to 50DMA: 0.6%
+## ASML — TRIGGER (FisherProxy 57.8)
+- Market cap: 528,396,845,056
+- Avg $ volume: 2,106,693,526
+- Close: 1345.69 | 50DMA: 1368.82 | 200DMA: 1008.70
+- ATH: 1526.51 | Days since ATH: 16
+- Drawdown from ATH: 11.8% | Dist to 50DMA: 1.7%
+- ATH→pullback→near 50DMA setup present
+- Reclaimed 50DMA within last 5 days
+
+## ADI — SETUP (FisherProxy 62.1)
+- Market cap: 149,424,652,288
+- Avg $ volume: 1,557,646,855
+- Close: 306.07 | 50DMA: 317.77 | 200DMA: 260.06
+- ATH: 359.67 | Days since ATH: 16
+- Drawdown from ATH: 14.9% | Dist to 50DMA: 3.7%
 - ATH→pullback→near 50DMA setup present
 
-## APP — WATCH (FisherProxy 73.9)
-- Market cap: 169,700,737,024
-- Avg $ volume: 3,133,246,642
-- Close: 502.14 | 50DMA: 524.90 | 200DMA: 511.11
-- ATH: 733.60 | Days since ATH: 74
-- Drawdown from ATH: 31.6% | Dist to 50DMA: 4.3%
+## AMGN — SETUP (FisherProxy 59.2)
+- Market cap: 197,411,962,880
+- Avg $ volume: 948,584,982
+- Close: 366.21 | 50DMA: 355.42 | 200DMA: 310.95
+- ATH: 388.16 | Days since ATH: 14
+- Drawdown from ATH: 5.7% | Dist to 50DMA: 3.0%
+- ATH→pullback→near 50DMA setup present
+
+## ASND — SETUP (FisherProxy 58.5)
+- Market cap: 13,873,625,088
+- Avg $ volume: 172,387,453
+- Close: 225.98 | 50DMA: 224.33 | 200DMA: 200.61
+- ATH: 242.09 | Days since ATH: 11
+- Drawdown from ATH: 6.7% | Dist to 50DMA: 0.7%
+- ATH→pullback→near 50DMA setup present
+
+## AMAT — SETUP (FisherProxy 54.8)
+- Market cap: 271,041,576,960
+- Avg $ volume: 2,738,179,945
+- Close: 341.53 | 50DMA: 331.10 | 200DMA: 235.34
+- ATH: 394.95 | Days since ATH: 16
+- Drawdown from ATH: 13.5% | Dist to 50DMA: 3.2%
+- ATH→pullback→near 50DMA setup present
+
+## APP — WATCH (FisherProxy 74.5)
+- Market cap: 155,009,826,816
+- Avg $ volume: 2,656,798,006
+- Close: 458.67 | 50DMA: 500.92 | 200DMA: 513.89
+- ATH: 733.60 | Days since ATH: 81
+- Drawdown from ATH: 37.5% | Dist to 50DMA: 8.4%
 - Timing not ready
-- ATH not within last 60 days (days_since_ath=74)
-- Drawdown 31.6% not in [3%, 15%]
+- ATH not within last 60 days (days_since_ath=81)
+- Drawdown 37.5% not in [3%, 15%]
+- Not near 50DMA (distance 8.4% > 5%)
+- MA50 not above MA200
 - MA50 not rising (vs 10 days ago)
 
-## AGNC — WATCH (FisherProxy 73.8)
-- Market cap: 11,797,320,704
-- Avg $ volume: 254,723,873
-- Close: 10.64 | 50DMA: 11.20 | 200DMA: 9.72
-- ATH: 12.04 | Days since ATH: 38
-- Drawdown from ATH: 11.6% | Dist to 50DMA: 5.0%
+## AGNC — WATCH (FisherProxy 72.5)
+- Market cap: 11,490,737,152
+- Avg $ volume: 244,359,842
+- Close: 10.23 | 50DMA: 11.15 | 200DMA: 9.70
+- ATH: 11.92 | Days since ATH: 45
+- Drawdown from ATH: 14.2% | Dist to 50DMA: 8.3%
 - Timing not ready
-- Not near 50DMA (distance 5.0% > 5%)
+- Not near 50DMA (distance 8.3% > 5%)
 
-## ALNY — WATCH (FisherProxy 71.7)
-- Market cap: 42,526,937,088
-- Avg $ volume: 423,242,793
-- Close: 320.66 | 50DMA: 354.82 | 200DMA: 391.39
-- ATH: 491.22 | Days since ATH: 137
-- Drawdown from ATH: 34.7% | Dist to 50DMA: 9.6%
+## ALNY — WATCH (FisherProxy 70.8)
+- Market cap: 41,565,421,568
+- Avg $ volume: 360,078,804
+- Close: 313.41 | 50DMA: 346.84 | 200DMA: 392.10
+- ATH: 491.22 | Days since ATH: 144
+- Drawdown from ATH: 36.2% | Dist to 50DMA: 9.6%
 - Timing not ready
-- ATH not within last 60 days (days_since_ath=137)
-- Drawdown 34.7% not in [3%, 15%]
+- ATH not within last 60 days (days_since_ath=144)
+- Drawdown 36.2% not in [3%, 15%]
 - Not near 50DMA (distance 9.6% > 5%)
 - MA50 not above MA200
 - MA50 not rising (vs 10 days ago)
 
-## ALAB — WATCH (FisherProxy 68.5)
-- Market cap: 20,289,566,720
-- Avg $ volume: 846,886,932
-- Close: 119.20 | 50DMA: 153.45 | 200DMA: 152.48
-- ATH: 251.88 | Days since ATH: 169
-- Drawdown from ATH: 52.7% | Dist to 50DMA: 22.3%
+## ALAB — WATCH (FisherProxy 69.1)
+- Market cap: 20,478,504,960
+- Avg $ volume: 585,298,802
+- Close: 120.31 | 50DMA: 148.58 | 200DMA: 153.14
+- ATH: 251.88 | Days since ATH: 176
+- Drawdown from ATH: 52.2% | Dist to 50DMA: 19.0%
 - Timing not ready
-- ATH not within last 60 days (days_since_ath=169)
-- Drawdown 52.7% not in [3%, 15%]
-- Not near 50DMA (distance 22.3% > 5%)
-- MA50 not rising (vs 10 days ago)
-
-## AVGO — WATCH (FisherProxy 66.6)
-- Market cap: 1,566,753,947,648
-- Avg $ volume: 8,292,998,093
-- Close: 330.48 | 50DMA: 334.32 | 200DMA: 319.98
-- ATH: 412.18 | Days since ATH: 86
-- Drawdown from ATH: 19.8% | Dist to 50DMA: 1.1%
-- Timing not ready
-- ATH not within last 60 days (days_since_ath=86)
-- Drawdown 19.8% not in [3%, 15%]
-- MA50 not rising (vs 10 days ago)
-
-## ARGX — WATCH (FisherProxy 63.4)
-- Market cap: 44,419,907,584
-- Avg $ volume: 290,161,850
-- Close: 717.80 | 50DMA: 817.06 | 200DMA: 743.66
-- ATH: 929.61 | Days since ATH: 109
-- Drawdown from ATH: 22.8% | Dist to 50DMA: 12.1%
-- Timing not ready
-- ATH not within last 60 days (days_since_ath=109)
-- Drawdown 22.8% not in [3%, 15%]
-- Not near 50DMA (distance 12.1% > 5%)
-- MA50 not rising (vs 10 days ago)
-
-## ADSK — WATCH (FisherProxy 61.1)
-- Market cap: 55,329,878,016
-- Avg $ volume: 619,066,123
-- Close: 260.99 | 50DMA: 258.88 | 200DMA: 291.88
-- ATH: 342.27 | Days since ATH: 1654
-- Drawdown from ATH: 23.7% | Dist to 50DMA: 0.8%
-- Timing not ready
-- ATH not within last 60 days (days_since_ath=1654)
-- Drawdown 23.7% not in [3%, 15%]
+- ATH not within last 60 days (days_since_ath=176)
+- Drawdown 52.2% not in [3%, 15%]
+- Not near 50DMA (distance 19.0% > 5%)
 - MA50 not above MA200
 - MA50 not rising (vs 10 days ago)
 
-## ASND — WATCH (FisherProxy 59.4)
-- Market cap: 14,774,262,784
-- Avg $ volume: 188,392,674
-- Close: 240.65 | 50DMA: 222.10 | 200DMA: 198.79
-- ATH: 242.09 | Days since ATH: 4
-- Drawdown from ATH: 0.6% | Dist to 50DMA: 8.4%
+## AVGO — WATCH (FisherProxy 65.6)
+- Market cap: 1,527,448,731,648
+- Avg $ volume: 8,718,254,672
+- Close: 322.16 | 50DMA: 333.06 | 200DMA: 322.68
+- ATH: 412.18 | Days since ATH: 93
+- Drawdown from ATH: 21.8% | Dist to 50DMA: 3.3%
 - Timing not ready
-- Drawdown 0.6% not in [3%, 15%]
-- Not near 50DMA (distance 8.4% > 5%)
-
-## AMGN — WATCH (FisherProxy 58.4)
-- Market cap: 199,201,669,120
-- Avg $ volume: 1,033,747,178
-- Close: 369.53 | 50DMA: 351.05 | 200DMA: 308.33
-- ATH: 388.16 | Days since ATH: 7
-- Drawdown from ATH: 4.8% | Dist to 50DMA: 5.3%
-- Timing not ready
-- Not near 50DMA (distance 5.3% > 5%)
-
-## AAPL — WATCH (FisherProxy 57.5)
-- Market cap: 3,784,127,807,488
-- Avg $ volume: 12,218,828,889
-- Close: 257.46 | 50DMA: 264.14 | 200DMA: 243.77
-- ATH: 285.92 | Days since ATH: 94
-- Drawdown from ATH: 10.0% | Dist to 50DMA: 2.5%
-- Timing not ready
-- ATH not within last 60 days (days_since_ath=94)
+- ATH not within last 60 days (days_since_ath=93)
+- Drawdown 21.8% not in [3%, 15%]
 - MA50 not rising (vs 10 days ago)
 
-## BBIO — WATCH (FisherProxy 57.2)
-- Market cap: 12,670,876,672
-- Avg $ volume: 235,168,324
-- Close: 65.36 | 50DMA: 73.65 | 200DMA: 58.14
-- ATH: 79.91 | Days since ATH: 43
-- Drawdown from ATH: 18.2% | Dist to 50DMA: 11.3%
+## ARGX — WATCH (FisherProxy 64.4)
+- Market cap: 43,346,235,392
+- Avg $ volume: 284,388,808
+- Close: 700.45 | 50DMA: 805.15 | 200DMA: 747.21
+- ATH: 929.61 | Days since ATH: 116
+- Drawdown from ATH: 24.7% | Dist to 50DMA: 13.0%
 - Timing not ready
-- Drawdown 18.2% not in [3%, 15%]
-- Not near 50DMA (distance 11.3% > 5%)
+- ATH not within last 60 days (days_since_ath=116)
+- Drawdown 24.7% not in [3%, 15%]
+- Not near 50DMA (distance 13.0% > 5%)
 - MA50 not rising (vs 10 days ago)
 
-## AEIS — WATCH (FisherProxy 57.1)
-- Market cap: 10,977,232,896
-- Avg $ volume: 234,628,317
-- Close: 290.78 | 50DMA: 271.34 | 200DMA: 191.84
-- ATH: 340.42 | Days since ATH: 4
-- Drawdown from ATH: 14.6% | Dist to 50DMA: 7.2%
+## ADSK — WATCH (FisherProxy 61.1)
+- Market cap: 53,248,040,960
+- Avg $ volume: 566,110,458
+- Close: 251.17 | 50DMA: 254.29 | 200DMA: 290.82
+- ATH: 342.27 | Days since ATH: 1661
+- Drawdown from ATH: 26.6% | Dist to 50DMA: 1.2%
 - Timing not ready
-- Not near 50DMA (distance 7.2% > 5%)
+- ATH not within last 60 days (days_since_ath=1661)
+- Drawdown 26.6% not in [3%, 15%]
+- MA50 not above MA200
+- MA50 not rising (vs 10 days ago)
 
-## AMD — WATCH (FisherProxy 56.2)
-- Market cap: 313,756,286,976
-- Avg $ volume: 7,626,308,923
-- Close: 192.43 | 50DMA: 217.61 | 200DMA: 188.61
-- ATH: 264.33 | Days since ATH: 128
-- Drawdown from ATH: 27.2% | Dist to 50DMA: 11.6%
+## AAPL — WATCH (FisherProxy 58.8)
+- Market cap: 3,676,245,065,728
+- Avg $ volume: 10,879,039,497
+- Close: 250.12 | 50DMA: 262.58 | 200DMA: 245.20
+- ATH: 285.92 | Days since ATH: 101
+- Drawdown from ATH: 12.5% | Dist to 50DMA: 4.7%
 - Timing not ready
-- ATH not within last 60 days (days_since_ath=128)
-- Drawdown 27.2% not in [3%, 15%]
-- Not near 50DMA (distance 11.6% > 5%)
+- ATH not within last 60 days (days_since_ath=101)
+- MA50 not rising (vs 10 days ago)
+
+## AEIS — WATCH (FisherProxy 57.8)
+- Market cap: 11,401,553,920
+- Avg $ volume: 208,834,817
+- Close: 302.02 | 50DMA: 280.46 | 200DMA: 196.63
+- ATH: 340.42 | Days since ATH: 11
+- Drawdown from ATH: 11.3% | Dist to 50DMA: 7.7%
+- Timing not ready
+- Not near 50DMA (distance 7.7% > 5%)
+
+## BBIO — WATCH (FisherProxy 57.4)
+- Market cap: 13,456,022,528
+- Avg $ volume: 209,599,387
+- Close: 69.41 | 50DMA: 73.03 | 200DMA: 59.05
+- ATH: 79.91 | Days since ATH: 50
+- Drawdown from ATH: 13.1% | Dist to 50DMA: 5.0%
+- Timing not ready
 - MA50 not rising (vs 10 days ago)
 
 ## ASTS — WATCH (FisherProxy 56.1)
-- Market cap: 34,008,961,024
-- Avg $ volume: 1,251,375,998
-- Close: 89.47 | 50DMA: 94.36 | 200DMA: 64.52
-- ATH: 122.09 | Days since ATH: 36
-- Drawdown from ATH: 26.7% | Dist to 50DMA: 5.2%
+- Market cap: 32,984,246,272
+- Avg $ volume: 1,092,313,697
+- Close: 86.34 | 50DMA: 95.50 | 200DMA: 66.10
+- ATH: 122.09 | Days since ATH: 43
+- Drawdown from ATH: 29.3% | Dist to 50DMA: 9.6%
 - Timing not ready
-- Drawdown 26.7% not in [3%, 15%]
-- Not near 50DMA (distance 5.2% > 5%)
+- Drawdown 29.3% not in [3%, 15%]
+- Not near 50DMA (distance 9.6% > 5%)
 
-## ASML — WATCH (FisherProxy 55.2)
-- Market cap: 507,629,174,784
-- Avg $ volume: 2,082,263,000
-- Close: 1292.80 | 50DMA: 1338.95 | 200DMA: 993.05
-- ATH: 1526.51 | Days since ATH: 9
-- Drawdown from ATH: 15.3% | Dist to 50DMA: 3.4%
+## AMD — WATCH (FisherProxy 55.6)
+- Market cap: 315,305,164,800
+- Avg $ volume: 7,160,264,336
+- Close: 193.39 | 50DMA: 216.13 | 200DMA: 190.82
+- ATH: 264.33 | Days since ATH: 135
+- Drawdown from ATH: 26.8% | Dist to 50DMA: 10.5%
 - Timing not ready
-- Drawdown 15.3% not in [3%, 15%]
+- ATH not within last 60 days (days_since_ath=135)
+- Drawdown 26.8% not in [3%, 15%]
+- Not near 50DMA (distance 10.5% > 5%)
+- MA50 not rising (vs 10 days ago)
 
-## AEP — WATCH (FisherProxy 54.1)
-- Market cap: 71,323,402,240
-- Avg $ volume: 485,064,211
-- Close: 131.87 | 50DMA: 121.51 | 200DMA: 112.65
-- ATH: 133.82 | Days since ATH: 7
-- Drawdown from ATH: 1.5% | Dist to 50DMA: 8.5%
+## AEP — WATCH (FisherProxy 54.5)
+- Market cap: 72,264,507,392
+- Avg $ volume: 481,915,922
+- Close: 133.61 | 50DMA: 123.27 | 200DMA: 113.45
+- ATH: 133.82 | Days since ATH: 14
+- Drawdown from ATH: 0.2% | Dist to 50DMA: 8.4%
 - Timing not ready
-- Drawdown 1.5% not in [3%, 15%]
-- Not near 50DMA (distance 8.5% > 5%)
+- Drawdown 0.2% not in [3%, 15%]
+- Not near 50DMA (distance 8.4% > 5%)
 
-## AMAT — WATCH (FisherProxy 54.0)
-- Market cap: 257,716,862,976
-- Avg $ volume: 2,851,562,178
-- Close: 324.74 | 50DMA: 322.89 | 200DMA: 230.78
-- ATH: 394.95 | Days since ATH: 9
-- Drawdown from ATH: 17.8% | Dist to 50DMA: 0.6%
+## ARM — WATCH (FisherProxy 53.5)
+- Market cap: 122,926,333,952
+- Avg $ volume: 465,051,636
+- Close: 115.75 | 50DMA: 117.13 | 200DMA: 138.15
+- ATH: 186.46 | Days since ATH: 611
+- Drawdown from ATH: 37.9% | Dist to 50DMA: 1.2%
 - Timing not ready
-- Drawdown 17.8% not in [3%, 15%]
+- ATH not within last 60 days (days_since_ath=611)
+- Drawdown 37.9% not in [3%, 15%]
+- MA50 not above MA200
 
-## APA — WATCH (FisherProxy 51.9)
-- Market cap: 11,692,462,080
-- Avg $ volume: 230,467,968
-- Close: 32.68 | 50DMA: 26.84 | 200DMA: 22.73
-- ATH: 53.15 | Days since ATH: 3370
-- Drawdown from ATH: 38.5% | Dist to 50DMA: 21.8%
+## ABNB — WATCH (FisherProxy 52.6)
+- Market cap: 75,718,615,040
+- Avg $ volume: 693,582,953
+- Close: 126.30 | 50DMA: 130.41 | 200DMA: 128.56
+- ATH: 216.84 | Days since ATH: 1856
+- Drawdown from ATH: 41.8% | Dist to 50DMA: 3.2%
 - Timing not ready
-- ATH not within last 60 days (days_since_ath=3370)
-- Drawdown 38.5% not in [3%, 15%]
-- Not near 50DMA (distance 21.8% > 5%)
-
-## ABNB — WATCH (FisherProxy 51.0)
-- Market cap: 79,873,245,184
-- Avg $ volume: 770,366,639
-- Close: 133.23 | 50DMA: 131.00 | 200DMA: 128.51
-- ATH: 216.84 | Days since ATH: 1849
-- Drawdown from ATH: 38.6% | Dist to 50DMA: 1.7%
-- Timing not ready
-- ATH not within last 60 days (days_since_ath=1849)
-- Drawdown 38.6% not in [3%, 15%]
+- ATH not within last 60 days (days_since_ath=1856)
+- Drawdown 41.8% not in [3%, 15%]
+- MA50 not rising (vs 10 days ago)
