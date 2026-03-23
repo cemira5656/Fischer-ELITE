@@ -1,44 +1,44 @@
 {
-  "as_of": "2026-03-16",
+  "as_of": "2026-03-23",
   "elite": [
     "APP",
     "AGNC",
     "ALNY",
     "ALAB",
     "AVGO",
-    "ARGX",
     "ADI",
+    "ARGX",
+    "AAPL",
     "ADSK",
-    "AMGN",
-    "AAPL"
+    "AMGN"
   ],
   "history": {
     "APP": {
-      "in_top10_streak": 17,
+      "in_top10_streak": 18,
       "out_top20_streak": 0
     },
     "ALNY": {
-      "in_top10_streak": 17,
+      "in_top10_streak": 18,
       "out_top20_streak": 0
     },
     "AGNC": {
-      "in_top10_streak": 17,
+      "in_top10_streak": 18,
       "out_top20_streak": 0
     },
     "ADSK": {
-      "in_top10_streak": 2,
+      "in_top10_streak": 3,
       "out_top20_streak": 0
     },
     "AMGN": {
-      "in_top10_streak": 14,
+      "in_top10_streak": 15,
       "out_top20_streak": 0
     },
     "ADBE": {
       "in_top10_streak": 0,
-      "out_top20_streak": 13
+      "out_top20_streak": 14
     },
     "AVGO": {
-      "in_top10_streak": 12,
+      "in_top10_streak": 13,
       "out_top20_streak": 0
     },
     "ARM": {
@@ -46,7 +46,7 @@
       "out_top20_streak": 0
     },
     "ALAB": {
-      "in_top10_streak": 12,
+      "in_top10_streak": 13,
       "out_top20_streak": 0
     },
     "AZN": {
@@ -55,39 +55,39 @@
     },
     "ABNB": {
       "in_top10_streak": 0,
-      "out_top20_streak": 0
+      "out_top20_streak": 1
     },
     "BSY": {
       "in_top10_streak": 0,
-      "out_top20_streak": 13
+      "out_top20_streak": 14
     },
     "BKNG": {
       "in_top10_streak": 0,
-      "out_top20_streak": 6
+      "out_top20_streak": 7
     },
     "ASND": {
       "in_top10_streak": 0,
       "out_top20_streak": 0
     },
     "AAPL": {
-      "in_top10_streak": 1,
+      "in_top10_streak": 2,
       "out_top20_streak": 0
     },
     "ADI": {
-      "in_top10_streak": 6,
+      "in_top10_streak": 7,
       "out_top20_streak": 0
     },
     "ARGX": {
-      "in_top10_streak": 5,
+      "in_top10_streak": 6,
       "out_top20_streak": 0
     },
     "ADP": {
       "in_top10_streak": 0,
-      "out_top20_streak": 13
+      "out_top20_streak": 14
     },
     "AMZN": {
       "in_top10_streak": 0,
-      "out_top20_streak": 13
+      "out_top20_streak": 14
     },
     "CASY": {
       "in_top10_streak": 0,
@@ -95,7 +95,7 @@
     },
     "ARCC": {
       "in_top10_streak": 0,
-      "out_top20_streak": 17
+      "out_top20_streak": 18
     },
     "AEP": {
       "in_top10_streak": 0,
@@ -107,15 +107,15 @@
     },
     "BNTX": {
       "in_top10_streak": 0,
-      "out_top20_streak": 17
+      "out_top20_streak": 18
     },
     "AXON": {
       "in_top10_streak": 0,
-      "out_top20_streak": 17
+      "out_top20_streak": 18
     },
     "ACGL": {
       "in_top10_streak": 0,
-      "out_top20_streak": 17
+      "out_top20_streak": 18
     },
     "AMD": {
       "in_top10_streak": 0,
@@ -127,7 +127,7 @@
     },
     "BIIB": {
       "in_top10_streak": 0,
-      "out_top20_streak": 17
+      "out_top20_streak": 18
     },
     "ASML": {
       "in_top10_streak": 0,
@@ -135,15 +135,15 @@
     },
     "AVAV": {
       "in_top10_streak": 0,
-      "out_top20_streak": 2
+      "out_top20_streak": 3
     },
     "AFRM": {
       "in_top10_streak": 0,
-      "out_top20_streak": 17
+      "out_top20_streak": 18
     },
     "AKAM": {
       "in_top10_streak": 0,
-      "out_top20_streak": 17
+      "out_top20_streak": 18
     },
     "ASTS": {
       "in_top10_streak": 0,
@@ -155,15 +155,15 @@
     },
     "BMRN": {
       "in_top10_streak": 0,
-      "out_top20_streak": 17
+      "out_top20_streak": 18
     },
     "ALGN": {
       "in_top10_streak": 0,
-      "out_top20_streak": 17
+      "out_top20_streak": 18
     },
     "BKR": {
       "in_top10_streak": 0,
-      "out_top20_streak": 17
+      "out_top20_streak": 18
     },
     "BILI": {
       "in_top10_streak": 0,
@@ -171,11 +171,11 @@
     },
     "AMKR": {
       "in_top10_streak": 0,
-      "out_top20_streak": 17
+      "out_top20_streak": 18
     },
     "BIDU": {
       "in_top10_streak": 0,
-      "out_top20_streak": 17
+      "out_top20_streak": 18
     },
     "AAL": {
       "in_top10_streak": 0,
@@ -631,7 +631,7 @@
     },
     "APA": {
       "in_top10_streak": 0,
-      "out_top20_streak": 1
+      "out_top20_streak": 0
     }
   }
 }
